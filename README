@@ -14,7 +14,7 @@ Some notes:
 
 How to run:
 
-1) Install the appoxy-aws and ruby-graphviz gems.
+1) Install the appoxy-aws and ruby-graphviz gems (and graphviz).
 2) Enter your access ID and secret key into config/initializers/aws.rb.
 3) rake db:migrate. We're using sqlite by default, for convenience.
 4) Fire up the server. "script/server -p 8081 -d" will do it. At the moment, this is only meant to run locally and has no authentication.
