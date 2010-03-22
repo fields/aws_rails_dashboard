@@ -1,5 +1,6 @@
 module InstanceUtil
   
+  ### untested!
   def increase_volume_size(volume_id, add_size)
     snapshot_info = {}
     EC2.describe_volumes.select{|x| x[:aws_id] == volume_id}.each {|vol|

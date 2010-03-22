@@ -2,6 +2,7 @@ require 'instance_util'
 include InstanceUtil
 
 namespace :instance do
+  ### somewhat tested. I think this should work. Use at your own risk.
   desc "Clone an instance"
   task :clone_instance => :environment do
     unless Label.exists? (:aws_source_id => ENV['AWS_ID'])
