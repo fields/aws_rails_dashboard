@@ -1,0 +1,4 @@
+New Aws::S3Interface using per_request-connection mode
+New Aws::Ec2 using per_request-connection mode
+New Aws::S3Interface using per_request-connection mode
+New Aws::Ec2 using per_request-connection mode

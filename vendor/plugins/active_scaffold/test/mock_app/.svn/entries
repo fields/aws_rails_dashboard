@@ -1,0 +1,77 @@
+10
+
+dir
+3959
+svn+ssh://fooqueue.com/var/svn/ma/maviewer/trunk/maviewer_front_rails/vendor/plugins/active_scaffold/test/mock_app
+svn+ssh://fooqueue.com/var/svn/ma
+
+
+
+2009-09-15T02:02:07.727694Z
+3463
+fields
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+b9e1247a-f289-41ca-910f-be7aae8c625c
+
+app
+dir
+
+config
+dir
+
+db
+dir
+
+.gitignore
+file
+
+
+
+
+2010-01-29T21:17:27.000000Z
+4379e8295ebe45a00fffd3719bd5efc7
+2009-09-15T02:02:07.727694Z
+3463
+fields
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+9
+
+vendor
+dir
+
+public
+dir
+

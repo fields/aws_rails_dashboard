@@ -1,0 +1,40 @@
+10
+
+dir
+3959
+svn+ssh://fooqueue.com/var/svn/ma/maviewer/trunk/maviewer_front_rails/vendor/plugins/active_scaffold/frontends/default
+svn+ssh://fooqueue.com/var/svn/ma
+
+
+
+2009-09-15T02:02:07.727694Z
+3463
+fields
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+b9e1247a-f289-41ca-910f-be7aae8c625c
+
+images
+dir
+
+javascripts
+dir
+
+stylesheets
+dir
+
+views
+dir
+

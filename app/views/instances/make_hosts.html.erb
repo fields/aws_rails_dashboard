@@ -1,0 +1,3 @@
+<% @addrs.each {|k, v| %>
+<pre><%= "#{v}\t#{Label.find_by_aws_id(k).label rescue ""}"%></pre>
+<% } %>

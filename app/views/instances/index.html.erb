@@ -1,0 +1,67 @@
+<%= link_to "External hosts file", :action => :make_hosts %> | <%= link_to "Graph", :action => :graph_layout %><br>
+
+<table border="1">
+<tr>
+    <th>Instance ID</th>
+    <th><%= link_to "Label", :controller => :labels, :action => :index -%></th>
+    <th>Actions</th>
+    <th>Volumes</th>
+    <th>State</th>
+    <th>Internal DNS</th>
+    <th>External DNS</th>
+</tr>
+    
+<% @instances.each {|instance| %>
+<tr>
+    <td><%= instance[:aws_instance_id] -%></td>
+    <td><%= Label.find_by_aws_id(instance[:aws_instance_id]).label rescue "" -%></td>
+    <td><%= link_to "Make a snapshot", :action => :snap_instance, :id => instance[:aws_instance_id]%> | <%= link_to "Prune snapshots", :action => :prune_snapshots, :id => instance[:aws_instance_id]%>
+    <td>
+        <table border="1">
+                <tr>
+                  <th> Size </th>
+                  <th> Volume ID </th>  
+                  <th> State </th>
+                  <th> Mounted On </th>
+                  <th> Snapshots </th>
+
+                </tr>
+                <% @volume_ids[instance[:aws_instance_id]].each {|volume_id| -%>
+                <tr>
+                    <td><%= @volumes[volume_id][:aws_size]%>
+                    <td><%= volume_id %></td>
+                    <td><%= @volumes[volume_id][:aws_status]%>
+                    <td><%= @volumes[volume_id][:aws_device]%>
+                    <td>
+                        <table border="1">
+                                <tr>
+                                  <th> Snapshot ID </th>
+                                  <th> Status </th>
+                                  <th> Progress </th>
+                                  <th> Started At </th>
+                                  <th> Actions </th>
+
+                                </tr>
+                                <% @snapshots[volume_id].each {|snapshot| -%>
+                                <tr>
+                                    <td><%= snapshot[:aws_id] %></td>
+                                    <td><%= snapshot[:aws_status] %></td>
+                                    <td><%= snapshot[:aws_progress] %></td>
+                                    <td><%= snapshot[:aws_started_at] %></td>
+                                    <td><%= link_to "Destroy", :action => :destroy_snapshot, :id => snapshot[:aws_id]%>
+                                </tr>
+                            <%- } -%>
+                        </table>
+                        
+                    </td>
+                </tr>
+            <%- } -%>
+        </table>
+    </td>
+    <td><%= instance[:aws_state] -%></td>
+    <td><%= instance[:private_dns_name] -%></td>
+    <td><%= instance[:dns_name] -%></td>
+
+</tr>
+<%- } -%>
+</table>

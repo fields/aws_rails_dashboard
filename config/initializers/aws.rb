@@ -1,0 +1,6 @@
+require 'right_aws'
+
+ACCESS_ID = "YOUR ACCESS KEY"
+SECRET_KEY = "YOUR SECRET KEY"
+S3 = Aws::S3.new(ACCESS_ID, SECRET_KEY)
+EC2 = Aws::Ec2.new(ACCESS_ID, SECRET_KEY)
