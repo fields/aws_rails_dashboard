@@ -4,7 +4,7 @@ Some notes:
 
 1) The instances page provides an overview of all of your aws instances, optional labels, all of the ebs volumes attached to them (with devices), and the snapshots that each one has. There are also methods provided to generate a graph of your instances with attached ebs volumes and snapshots, and generate an external hosts file if you want one. Links are provided from the main instances page.
 
-2) As a convenience, I've included active-scaffolding for editing "labels". Labels are used to generate the hosts file, and used to determine if an instance has an available ami to perform cloning with the rake clone_instance task. For regular labels, ignore the aws_source_id. For ami labels, use the ami id as the aws_id and use the instance_id of the machine it was created from as the aws_source_id. The clone_instance task will snapshot all of the disks attached to the source, and 
+2) As a convenience, I've included active-scaffolding for editing "labels". Labels are used to generate the hosts file, and used to determine if an instance has an available ami to perform cloning with the rake clone_instance task. For regular labels, ignore the aws_source_id. For ami labels, use the ami id as the aws_id and use the instance_id of the machine it was created from as the aws_source_id. The clone_instance task will snapshot all of the disks attached to the source, and create a new instance based on the ami, and then attach the cloned volumes to the new instance using the correct devices. You're responsible for making sure they get mounted in the new instance.
 
 3) To autosnap an instance, set autosnap in its label to true. Then, when you run rake instance:autosnap, it will take snapshots of every disk attached to every instance marked autosnap, and prune them to only keep the most recent 2 snapshots.
 
@@ -19,6 +19,13 @@ How to run:
 3) rake db:migrate. We're using sqlite by default, for convenience.
 4) Fire up the server. "script/server -p 8081 -d" will do it. At the moment, this is only meant to run locally and has no authentication.
 5) Hit localhost:8081/instances in a browser.
+
+Some todos on my list:
+
+1) Finish the dynamic resizing of EBS volumes.
+2) Hooks for before/after commands for snapshots. (Specifically for fsync lock support for cloning mongodb instances.)
+3) Nicer graphs.
+4) Support for EBS root instance cloning in addition to ami/instance store instance cloning.
 
 I welcome comments, and I hope this is useful for you.
 
