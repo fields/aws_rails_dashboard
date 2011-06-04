@@ -5,7 +5,7 @@ namespace :instance do
   ### somewhat tested. I think this should work. Use at your own risk.
   desc "Clone an instance"
   task :clone_instance => :environment do
-    unless Label.exists? (:aws_source_id => ENV['AWS_ID'])
+    unless Label.exists?(:aws_source_id => ENV['AWS_ID'])
       puts "This instance has no registered AMI source. Add one and try again."
       exit
     end
@@ -43,23 +43,85 @@ namespace :instance do
     }
 
   end
+
+### in progress
+  desc "Move an instance's volumes"
+  task :move_instance_volumes => :environment do
+    @instances = EC2.describe_instances
+    @all_volumes = EC2.describe_volumes
+    @volume_ids = {}
+    @volumes = {}
+    @instances.each{|instance|
+      @volume_ids[instance[:aws_instance_id]] = @all_volumes.select{|x| x[:aws_attachment_status] == "attached" and x[:aws_instance_id] == instance[:aws_instance_id]}.collect{|x| x[:aws_id]}
+      @volume_ids[instance[:aws_instance_id]].each{|volume_id|
+        @volumes[volume_id] = @all_volumes.select{|x| x[:aws_id] == volume_id}.first
+      } 
+    }
+    vols = {}
+    @volume_ids[ENV['AWS_SOURCE_ID']].each{|volume_id|
+      vols[@volumes[volume_id][:aws_device]] = @volumes[volume_id][:aws_id]
+    }
+    vols.each{|mount_point, vol_id|
+      puts "detaching #{vol_id}"
+      EC2.detach_volume(vol_id)
+    }
+    vols.each{|mount_point, vol_id|
+      puts "attaching #{vol_id} to #{ENV['AWS_DEST_ID']} on  #{mount_point}"
+      EC2.attach_volume(vol_id, ENV['AWS_DEST_ID'], mount_point) rescue nil
+    }
+
+    
+  end
+
   desc "Snapshot an instance"
   task :snap_instance => :environment do
+    label = Label.find_by_aws_id(ENV['AWS_ID'])
+    label.before_snapshot unless label.blank?
     make_snapshot_of_all_volumes(ENV['AWS_ID'])
+    sleep 5 unless label.after_snapshot_code.blank?
+    label.after_snapshot unless label.blank?
   end
 
   desc "Prune old snapshots of an instance"
   task :prune_snapshots => :environment do
-    delete_old_snapshots(ENV['AWS_ID'], 2)
+    delete_old_snapshots(ENV['AWS_ID'], 4)
+  end
+  
+  desc "Delete n oldest snapshots of an instance"
+  task :delete_oldest_snapshots => :environment do
+    delete_oldest_snapshots(ENV['AWS_ID'])
   end
 
   desc "Snapshot all autosnap instances"
   task :autosnap => :environment do
     Label.find_all_by_autosnap(true).each{|label|
-      puts "Snapshotting instance #{label.aws_id}"
-      make_snapshot_of_all_volumes(label.aws_id)
-      delete_old_snapshots(label.aws_id, 2)
+      begin
+        label.before_snapshot unless label.blank?
+        puts "Snapshotting instance #{label.aws_id}"
+        make_snapshot_of_all_volumes(label.aws_id)
+        sleep 5 unless label.after_snapshot_code.blank?
+        delete_old_snapshots(label.aws_id, 4)
+        label.after_snapshot unless label.blank?
+      rescue
+        puts "ERROR snapshotting instance #{label.aws_id}: #{$!}"
+        next
+      end
     }
   end
-
+  
+  desc "SSH to instance ID"
+  task :ssh_to_instance_id => :environment do
+    hosts = EC2.describe_instances.select{|x| x[:aws_state] == "running"}.collect{|x| [x[:aws_instance_id], x[:dns_name]]}
+    if ENV["USERNAME"].blank?
+      username = "maviewer"
+    else
+      username = ENV["USERNAME"]
+    end
+    unless ENV["AWS_INSTANCE_ID"].blank?
+      hosts = hosts.select{|x| x[0] == ENV["AWS_INSTANCE_ID"]}
+      aws_instance_id, host = hosts.first
+      exec("ssh #{username}@#{host}")
+    end
+  end
+  
 end
