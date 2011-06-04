@@ -39,9 +39,11 @@ module InstanceUtil
   def delete_old_snapshots(instance_id, num_to_keep)
     @all_snapshots = EC2.describe_snapshots
     snapshots = []
-    index_to_keep = -1 - num_to_keep
+    index_to_keep = 0 - num_to_keep - 1
     EC2.describe_volumes.select{|x| x[:aws_attachment_status] == "attached" and x[:aws_instance_id] == instance_id}.each {|volume|
-         @all_snapshots.select{|x| x[:aws_volume_id] == volume[:aws_id]}.sort_by{|x| x[:aws_started_at]}[0..index_to_keep].collect{|x| x[:aws_id]}.each{|snapshot_id|
+         snaps = @all_snapshots.select{|x| x[:aws_volume_id] == volume[:aws_id]}.sort_by{|x| x[:aws_started_at]}
+         next if snaps.length < (num_to_keep.to_i * 2) + 1
+         snaps.values_at(num_to_keep..index_to_keep).collect{|x| x[:aws_id]}.each{|snapshot_id|
            delete_snapshot(snapshot_id)
            snapshots << snapshot_id
           }
@@ -67,5 +69,12 @@ module InstanceUtil
     snapshots    
   end
 
+  def delete_all_ami_instances(ami_id)
+    EC2.terminate_instances(EC2.describe_instances.select{|x| x[:aws_image_id] == ami_id}.select{|x| x[:aws_state] == "running"}.collect{|x| x[:aws_instance_id]})
+  end
+
+  def reboot_all_ami_instances(ami_id)
+    EC2.reboot_instances(EC2.describe_instances.select{|x| x[:aws_image_id] == ami_id}.select{|x| x[:aws_state] == "running"}.collect{|x| x[:aws_instance_id]})
+  end
 
 end

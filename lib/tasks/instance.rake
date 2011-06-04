@@ -113,7 +113,7 @@ namespace :instance do
   task :ssh_to_instance_id => :environment do
     hosts = EC2.describe_instances.select{|x| x[:aws_state] == "running"}.collect{|x| [x[:aws_instance_id], x[:dns_name]]}
     if ENV["USERNAME"].blank?
-      username = "maviewer"
+      username = "root"
     else
       username = ENV["USERNAME"]
     end

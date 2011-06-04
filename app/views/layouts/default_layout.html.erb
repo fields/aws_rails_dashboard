@@ -1,14 +1,68 @@
 <!DOCTYPE html
-     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-     "DTD/xhtml1-strict.dtd">
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-  <title>AWS Dashboard</title>
-  <%= javascript_include_tag :defaults %>
-  <%= active_scaffold_includes %>
-</head>
-<body>
-  <%#= render :partial => "toolbar" %>
-  <%= yield %>
-</body>
-</html>
+    <title>AWS Dashboard</title>
+    <%= javascript_include_tag :defaults %>
+    <%= active_scaffold_includes %>
+
+    <style>
+    BODY {
+        font-family: Arial, Helvetica, Geneva, Verdana;
+        font-size:   13px;
+        color:       #333333;
+    }
+
+    .body {
+        font-family: Arial, Helvetica, Geneva, Verdana;
+        font-size:   13px;
+        color:       #333333;
+    }
+
+    .title {
+        font-family: Times New Roman;
+        font-size:   16px;
+        color:       #333333;
+        font-weight: bold;
+    }
+
+    .subtitle {
+        font-family: Times New Roman;
+        font-size:   12px;
+        color:       #333333;
+        font-weight: bold;
+    }
+
+    A {
+        text-decoration: none;
+    }
+
+    A:link {
+        color:           #3366cc;
+        text-decoration: none;
+    }
+    A:visited {
+        color: #663399;
+        text-decoration: none;
+    }
+
+    A:active
+    {
+        color:           #cccccc;
+        text-decoration: none;
+    }
+
+    .disclaimer {
+        font-family: Geneva, Verdana, Arial, Helvetica;
+        font-size:   9px;
+        color:       #999999;
+    }
+    </style>
+
+    </head>
+    <body>
+    <%#= render :partial => "toolbar" %>
+    <%= yield %>
+    </body>
+    </html>

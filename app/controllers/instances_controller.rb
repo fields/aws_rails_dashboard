@@ -3,6 +3,8 @@ require 'resolv'
 include InstanceUtil
 
 class InstancesController < ApplicationController
+  layout 'default_layout'
+  
   def index
     setup_instance_hashes
     
@@ -13,7 +15,6 @@ class InstancesController < ApplicationController
     @addrs = {}
     @instances.each{|x| Resolv::DNS.new.each_address(x[:dns_name]) { |addr| @addrs[x[:aws_instance_id]] = addr.to_s }}
   end
-  
   
   def instance_list
     @instances = EC2.describe_instances
@@ -69,7 +70,6 @@ class InstancesController < ApplicationController
       output = redirect { g.output(:output => "png") }
       send_data output, :filename => "aws_graph_#{Time.now.strftime("%Y%m%d")}.png", :type => 'image/png', :disposition => 'inline'
     end
-    
   end
   
 
@@ -83,6 +83,12 @@ class InstancesController < ApplicationController
     delete_old_snapshots(params[:id], 2)
     redirect_to '/instances' and return
   end
+  
+  def destroy_oldest_snapshots
+    delete_oldest_snapshots(params[:id])
+    redirect_to '/instances' and return
+  end
+
   
   def destroy_snapshot
     result = delete_snapshot(params[:id])
@@ -107,6 +113,10 @@ class InstancesController < ApplicationController
       } 
     }
     
+  end
+
+  def label_for(aws_id)
+    Label.find_by_aws_id(aws_id).label rescue ""
   end
 
   def redirect
