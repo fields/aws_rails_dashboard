@@ -26,7 +26,9 @@
     %>
     <td><span style="color:<%= color -%>"> <%= label %></span></td>
     <td><%= label_for(instance[:aws_image_id]) %> (<%= instance[:aws_image_id]%>)
-    <td><%= link_to "Make a snapshot", :action => :snap_instance, :id => instance[:aws_instance_id]%> | <%= link_to "Prune snapshots", :action => :prune_snapshots, :id => instance[:aws_instance_id]%> | <%= link_to "Delete oldest snapshot", :action => :destroy_oldest_snapshots, :id => instance[:aws_instance_id]%>
+    <td><%= button_to "Make a snapshot", :action => :snap_instance, :id => instance[:aws_instance_id]%>
+      <%= button_to "Prune snapshots", {:action => :prune_snapshots, :id => instance[:aws_instance_id]}, {:confirm => 'Are you sure?'}%>
+      <%= button_to "Delete oldest snapshot", {:action => :destroy_oldest_snapshots, :id => instance[:aws_instance_id]}, {:confirm => 'Are you sure?'}%>
     <td>
         <table border="1">
                 <tr>
@@ -59,7 +61,7 @@
                                     <td><%= snapshot[:aws_status] %></td>
                                     <td><%= snapshot[:aws_progress] %></td>
                                     <td nowrap="nowrap"><%= snapshot[:aws_started_at] %></td>
-                                    <td><%= link_to "Destroy", :action => :destroy_snapshot, :id => snapshot[:aws_id]%>
+                                    <td><%= button_to "Destroy", {:action => :destroy_snapshot, :id => snapshot[:aws_id]}, {:confirm => 'Are you sure?'}%>
                                 </tr>
                             <%- } -%>
                         </table>
