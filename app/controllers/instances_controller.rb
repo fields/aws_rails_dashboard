@@ -64,10 +64,10 @@ class InstancesController < ApplicationController
     # g.output (:png => '/Users/fields/Desktop/graph.png')
 
     if params[:output] == "dot"
-      output = redirect { g.output(:output => "dot") }
+      output = g.output(:dot => String)
       send_data output, :filename => "aws_graph_#{Time.now.strftime("%Y%m%d")}.dot", :type => 'text/vnd.graphviz'
     else
-      output = redirect { g.output(:output => "png") }
+      output = g.output(:png => String)
       send_data output, :filename => "aws_graph_#{Time.now.strftime("%Y%m%d")}.png", :type => 'image/png', :disposition => 'inline'
     end
   end
