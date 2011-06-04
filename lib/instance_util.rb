@@ -18,10 +18,17 @@ module InstanceUtil
   end
   
   def make_snapshot_of_all_volumes(instance_id)
+    label = Label.find_by_aws_id(instance[:aws_instance_id]).label rescue nil
+    unless label.blank?
+      label.before_snapshot
+    end
     snapshots = []
     EC2.describe_volumes.select{|x| x[:aws_attachment_status] == "attached" and x[:aws_instance_id] == instance_id}.each {|vol|
         snapshots << [EC2.create_snapshot(vol[:aws_id]), vol[:aws_device], vol[:aws_size], vol[:zone]] 
     }
+    unless label.blank?
+      label.after_snapshot
+    end
     snapshots
   end
 
@@ -41,5 +48,24 @@ module InstanceUtil
     }
     snapshots
   end
+
+  def delete_oldest_snapshots(instance_id, num_to_delete = 1)
+    return if num_to_delete < 1
+    @all_snapshots = EC2.describe_snapshots
+    snapshots = []
+    EC2.describe_volumes.select{|x| x[:aws_attachment_status] == "attached" and x[:aws_instance_id] == instance_id}.each {|volume|
+         snaps = @all_snapshots.select{|x| x[:aws_volume_id] == volume[:aws_id]}.sort_by{|x| x[:aws_started_at]}
+         begin
+           snaps.values_at(0..num_to_delete - 1).collect{|x| x[:aws_id]}.each{|snapshot_id|
+           delete_snapshot(snapshot_id)
+           snapshots << snapshot_id
+          }
+        rescue
+          next
+        end
+    }
+    snapshots    
+  end
+
 
 end

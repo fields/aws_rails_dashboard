@@ -14,6 +14,29 @@ class InstancesController < ApplicationController
     @instances.each{|x| Resolv::DNS.new.each_address(x[:dns_name]) { |addr| @addrs[x[:aws_instance_id]] = addr.to_s }}
   end
   
+  
+  def instance_list
+    @instances = EC2.describe_instances
+    csv_string = FasterCSV.generate do |csv|
+      csv << ["Instance ID", "Instance Label", "Image ID", "Image Label", "Instance Type", "State"]
+      @instances.each{|ins|
+        csv << [ins[:aws_instance_id], label_for(ins[:aws_instance_id]),
+          ins[:aws_image_id], label_for(ins[:aws_image_id]),
+          ins[:aws_instance_type], ins[:aws_state]
+        ]
+      }
+    end
+    filename = "instances_#{Time.now.strftime("%Y%m%d")}.csv"
+    if params[:filetype] == "text"
+      filetype = "text/plain"
+    else
+      filetype = "text/csv"
+    end
+    send_data(csv_string,
+          :type => "#{filetype}; charset=utf-8; header=present",
+          :filename => filename)
+  end
+  
   def graph_layout
     
     setup_instance_hashes
@@ -38,8 +61,14 @@ class InstancesController < ApplicationController
     }
     # send data
     # g.output (:png => '/Users/fields/Desktop/graph.png')
-    output = redirect { g.output(:output => "png") }
-    send_data output, :filename => 'aws_graph.png', :type => 'image/png', :disposition => 'inline'
+
+    if params[:output] == "dot"
+      output = redirect { g.output(:output => "dot") }
+      send_data output, :filename => "aws_graph_#{Time.now.strftime("%Y%m%d")}.dot", :type => 'text/vnd.graphviz'
+    else
+      output = redirect { g.output(:output => "png") }
+      send_data output, :filename => "aws_graph_#{Time.now.strftime("%Y%m%d")}.png", :type => 'image/png', :disposition => 'inline'
+    end
     
   end
   
