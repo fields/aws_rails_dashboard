@@ -14,7 +14,7 @@ Some notes:
 
 How to run:
 
-1) Install the appoxy-aws and ruby-graphviz gems (and graphviz). 
+1) Install the appoxy-aws, fastercsv, and ruby-graphviz gems (and graphviz). 
 2) Enter your access ID and secret key into config/initializers/aws.rb. (Note: it appears that the appoxy-aws gem has been shifting things around. I'll try to get the version stabilized next week. You might need to change Aws:: to RightAws:: in initializers/aws.rb depending on what version of the gem you have.)
 3) rake db:migrate. We're using sqlite by default, for convenience.
 4) Fire up the server. "script/server -p 8081 -d" will do it. At the moment, this is only meant to run locally and has no authentication.
@@ -23,8 +23,10 @@ How to run:
 Some todos on my list:
 
 1) Finish the dynamic resizing of EBS volumes.
-2) Hooks for before/after commands for snapshots. (Specifically for fsync lock support for cloning mongodb instances.)
 3) Nicer graphs.
+2) Hooks for before/after commands for snapshots. (Specifically for
+fsync lock support for cloning mongodb instances.) - done, but not
+extensively tested.
 4) Support for EBS root instance cloning in addition to ami/instance store instance cloning.
 
 I welcome comments, and I hope this is useful for you.
